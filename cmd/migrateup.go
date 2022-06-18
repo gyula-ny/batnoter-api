@@ -2,10 +2,11 @@ package cmd
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database/postgres"
+	"github.com/golang-migrate/migrate/v4/database/sqlite3"
+
+	// "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file" // required to support file protocol
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -20,21 +21,19 @@ var migrateupCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		logrus.Info("starting database migration")
 
-		dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s search_path=%s sslmode=%s TimeZone=UTC",
-			conf.Database.Host, conf.Database.Username, conf.Database.Password, conf.Database.DBName, conf.Database.Port, "batnoter", conf.Database.SSLMode)
+		// dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s search_path=%s sslmode=%s TimeZone=UTC",
+		// conf.Database.Host, conf.Database.Username, conf.Database.Password, conf.Database.DBName, conf.Database.Port, "batnoter", conf.Database.SSLMode)
 
-		db, err := sql.Open("postgres", dsn)
+		db, err := sql.Open("sqlite3", "./test.db")
 		if err != nil {
 			return err
 		}
 
-		driver, err := postgres.WithInstance(db, &postgres.Config{
-			MultiStatementEnabled: true,
-		})
+		driver, err := sqlite3.WithInstance(db, new(sqlite3.Config))
 		if err != nil {
 			return err
 		}
-		m, err := migrate.NewWithDatabaseInstance("file://migrations", conf.Database.DBName, driver)
+		m, err := migrate.NewWithDatabaseInstance("file://migrations", "batnoter", driver)
 		if err != nil {
 			return err
 		}

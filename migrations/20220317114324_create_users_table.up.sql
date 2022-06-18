@@ -1,10 +1,10 @@
 create table if not exists users
 (
-    id              serial primary key,
-    created_at      timestamp without time zone default (now() at time zone 'utc'),
-    updated_at      timestamp without time zone default (now() at time zone 'utc'),
-    deleted_at      timestamp without time zone default null,
-    disabled_at     timestamp without time zone default null,
+    id              integer primary key,
+    created_at      timestamp default CURRENT_TIMESTAMP,
+    updated_at      timestamp default CURRENT_TIMESTAMP,
+    deleted_at      timestamp default null,
+    disabled_at     timestamp default null,
     email           varchar(255) not null unique,
     name            varchar(255) null,
     location        varchar(255) null,
